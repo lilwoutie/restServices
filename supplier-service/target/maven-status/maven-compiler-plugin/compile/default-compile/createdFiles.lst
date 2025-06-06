@@ -1,0 +1,6 @@
+com/example/supplier/service/ProductService.class
+com/example/supplier/App.class
+com/example/supplier/controller/ProductController.class
+com/example/supplier/SupplierApplication.class
+com/example/supplier/repository/ProductRepository.class
+com/example/supplier/model/Product.class
