@@ -1,6 +1,6 @@
 # Food Supplier Service
 
-This service represents a RESTful API for a food supplier, developed using Spring Boot. It allows you to manage food items with properties such as name, item description, price, and delivery status.
+This service represents a RESTful API for a food supplier, developed using Spring Boot. It allows you to manage food product with properties such as name, item description, price, and delivery status.
 
 ## Data Model
 
@@ -14,18 +14,18 @@ Each food item has the following properties:
 
 ## API Endpoints
 
-### Get all food items
+### Get all food product
 
 ```
-GET /items
+GET /product
 ```
 
-Returns a list of all food items.
+Returns a list of all food product.
 
 ### Get a single item by ID
 
 ```
-GET /items/{id}
+GET /product/{id}
 ```
 
 Returns the item with the specified ID.
@@ -33,7 +33,7 @@ Returns the item with the specified ID.
 ### Add a new item
 
 ```
-POST /items
+POST /product
 ```
 
 **Request body:**
@@ -49,7 +49,7 @@ POST /items
 ### Update an existing item
 
 ```
-PUT /items/{id}
+PUT /product/{id}
 ```
 
 **Request body:**
@@ -65,7 +65,7 @@ PUT /items/{id}
 ### Delete an item
 
 ```
-DELETE /items/{id}
+DELETE /product/{id}
 ```
 
 Deletes the item with the specified ID.
@@ -75,36 +75,64 @@ Deletes the item with the specified ID.
 - Create item:
 
 ```
-curl -X POST http://localhost:8081/items   -H "Content-Type: application/json"   -d '{"name":"Pizza","description":"Pepperoni","price":12.99,"available":false}'
+curl -X POST http://localhost:8081/product   -H "Content-Type: application/json"   -d '{"name":"Pizza","description":"Pepperoni","price":12.99,"available":false}'
+```
+- Get all product:
+
+```
+curl http://localhost:8081/product/all
 ```
 
-- Get all items:
+- Get all available product:
 
 ```
-curl http://localhost:8081/items
+curl http://localhost:8081/product
 ```
 
 - Update item:
 
 ```
-curl -X PUT http://localhost:8081/items/1   -H "Content-Type: application/json"   -d '{"name":"Burger","description":"Beef burger","price":9.99,"available":true}'
+curl -X PUT http://localhost:8081/product/1   -H "Content-Type: application/json"   -d '{"name":"Burger","description":"Beef burger","price":9.99,"available":true}'
 ```
 
 - Delete item:
 
 ```
-curl -X DELETE http://localhost:8081/items/1
+curl -X DELETE http://localhost:8081/product/1
 ```
 
 ## Project Status
 
 ✅ Basic CRUD functionality implemented  
 ✅ In-memory H2 database used for development and testing  
-❌ 2PC not yet implemented
+❌2PC  implemented
 
 ---
+food-supplier-2
+all commands above work here as well but on port 8083
+
+2PC commands:
+
+get all staged transactions:
+curl http://localhost:8083/transaction/staged
 
 
+prepare:
+curl -X POST http://localhost:8083/transaction/prepare/tx123   -H "Content-Type: application/json"   -d '{
+        "name": "Pizza Margherita",
+        "description": "Classic pizza with tomato sauce and cheese",
+        "price": 8.5,
+        "available": true
+      }'
+
+commit:
+curl -X POST http://localhost:8083/transaction/commit/tx123
+
+rollback/unstage:
+curl -X POST http://localhost:8083/transaction/rollback/tx123
+
+
+✅ 2PC  implemented
 -----------------------------------------------------------
 
  REST Order Service – API Overview
