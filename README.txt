@@ -10,7 +10,7 @@ Each food item has the following properties:
 - `name` (String): Name of the food item.
 - `description` (String): Description of the food item.
 - `price` (Double): Price of the food item.
-- `delivered` (Boolean): Delivery status of the item.
+- `available` (Boolean): Delivery status of the item.
 
 ## API Endpoints
 
@@ -42,7 +42,7 @@ POST /items
   "name": "Pizza",
   "description": "Large pepperoni pizza",
   "price": 12.99,
-  "delivered": false
+  "available": false
 }
 ```
 
@@ -58,7 +58,7 @@ PUT /items/{id}
   "name": "Pizza",
   "description": "Large vegetarian pizza",
   "price": 13.49,
-  "delivered": true
+  "available": true
 }
 ```
 
@@ -75,7 +75,7 @@ Deletes the item with the specified ID.
 - Create item:
 
 ```
-curl -X POST http://localhost:8081/items   -H "Content-Type: application/json"   -d '{"name":"Pizza","description":"Pepperoni","price":12.99,"delivered":false}'
+curl -X POST http://localhost:8081/items   -H "Content-Type: application/json"   -d '{"name":"Pizza","description":"Pepperoni","price":12.99,"available":false}'
 ```
 
 - Get all items:
@@ -87,7 +87,7 @@ curl http://localhost:8081/items
 - Update item:
 
 ```
-curl -X PUT http://localhost:8081/items/1   -H "Content-Type: application/json"   -d '{"name":"Burger","description":"Beef burger","price":9.99,"delivered":true}'
+curl -X PUT http://localhost:8081/items/1   -H "Content-Type: application/json"   -d '{"name":"Burger","description":"Beef burger","price":9.99,"available":true}'
 ```
 
 - Delete item:
