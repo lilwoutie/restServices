@@ -14,16 +14,19 @@ public class Product {
     private String description;
     private double price;
     private boolean available;
+    @Column(nullable = false)
+    private int quantity;
 
     // Constructors
     public Product() {}
 
-    public Product(String name, String description, double price, boolean available) {
+    public Product(String name, String description, double price, boolean available, int quantity) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.available = available;
-    }
+        this.quantity = quantity;
+  ;  }
 
     // Getters and setters
     public Long getId() {
@@ -54,9 +57,19 @@ public class Product {
         this.price = price;
     }
 
-    public boolean isAvailable() {
-        return available;
+
+    public int getQuantity() {
+        return quantity;
     }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public boolean isAvailable() {
+        return quantity > 0;
+    }
+
 
     public void setAvailable(boolean available) {
         this.available = available;

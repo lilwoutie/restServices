@@ -47,10 +47,23 @@ public class ProductService {
 
     public Optional<Product> updateProduct(Long id, Product updatedProduct) {
         return repository.findById(id).map(existingProduct -> {
+            // Compare and print differences
+            System.out.println("Comparing existing and updated product:");
+            System.out.println("  Old Quantity: " + existingProduct.getQuantity());
+            System.out.println("  New Quantity: " + updatedProduct.getQuantity());
+
+            if (!existingProduct.equals(updatedProduct)) {
+                System.out.println("  Product has changes, proceeding with update...");
+            } else {
+                System.out.println("  Product is identical, skipping update.");
+            }
+
+            //update fields
             existingProduct.setName(updatedProduct.getName());
             existingProduct.setDescription(updatedProduct.getDescription());
             existingProduct.setPrice(updatedProduct.getPrice());
             existingProduct.setAvailable(updatedProduct.isAvailable());
+            existingProduct.setQuantity(updatedProduct.getQuantity());
             return repository.save(existingProduct);
         });
     }
