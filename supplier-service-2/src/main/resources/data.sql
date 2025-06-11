@@ -1,6 +1,6 @@
-INSERT INTO product ( name, description, price, available, quantity) VALUES
+INSERT INTO product (name, description, price, available, quantity) VALUES
 ('Vegan Burger', 'Plant-based patty with lettuce and tomato', 9.50, true, 5),
-('Caesar Salad', 'Romaine lettuce with Caesar dressing and croutons', 7.00, false, 0),
-('Tomato Soup', 'Creamy tomato soup with basil', 5.00, false, 0),
-('Sweet Potato Fries', 'Crispy sweet potato fries', 3.50, false, 0),
+('Cheeseburger', 'Beef patty with cheese, lettuce, and tomato', 8.50, true, 6),
+('Sweet Potato Fries', 'Crispy sweet potato fries', 3.50, true, 10),
+('Onion Rings', 'Battered and fried onion rings', 3.00, true, 8),
 ('Iced Tea', 'Refreshing iced black tea', 2.50, true, 7);
