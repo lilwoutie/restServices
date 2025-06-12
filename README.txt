@@ -1,212 +1,145 @@
-# Food Supplier Service
 
-This service represents a RESTful API for a food supplier, developed using Spring Boot. It allows you to manage food product with properties such as name, item description, price, and delivery status.
+# Supplier REST Service – 2PC Compatible API
 
-## Data Model
-
-Each food item has the following properties:
-
-- `id` (Long): Unique identifier for the item.
-- `name` (String): Name of the food item.
-- `description` (String): Description of the food item.
-- `price` (Double): Price of the food item.
-- `available` (Boolean): Delivery status of the item.
-
-## API Endpoints
-
-### Get all food product
-
-```
-GET /product
-```
-
-Returns a list of all food product.
-
-### Get a single item by ID
-
-```
-GET /product/{id}
-```
-
-Returns the item with the specified ID.
-
-### Add a new item
-
-```
-POST /product
-```
-
-**Request body:**
-```json
-{
-  "name": "Pizza",
-  "description": "Large pepperoni pizza",
-  "price": 12.99,
-  "available": false
-}
-```
-
-### Update an existing item
-
-```
-PUT /product/{id}
-```
-
-**Request body:**
-```json
-{
-  "name": "Pizza",
-  "description": "Large vegetarian pizza",
-  "price": 13.49,
-  "available": true
-}
-```
-
-### Delete an item
-
-```
-DELETE /product/{id}
-```
-
-Deletes the item with the specified ID.
-
-## Example curl Commands
-
-- Create item:
-
-```
-curl -X POST http://localhost:8081/product   -H "Content-Type: application/json"   -d '{"name":"Pizza","description":"Pepperoni","price":12.99,"available":false}'
-```
-- Get all product:
-
-```
-curl http://localhost:8081/product/all
-```
-
-- Get all available product:
-
-```
-curl http://localhost:8081/product
-```
-
-- Update item:
-
-```
-curl -X PUT http://localhost:8081/product/1   -H "Content-Type: application/json"   -d '{"name":"Burger","description":"Beef burger","price":9.99,"available":true}'
-```
-
-- Delete item:
-
-```
-curl -X DELETE http://localhost:8081/product/1
-```
-
-## Project Status
-
-✅ Basic CRUD functionality implemented  
-✅ In-memory H2 database used for development and testing  
-❌2PC  implemented
+This project implements a **Supplier Service** in a distributed food-ordering system. It supports the **Two-Phase Commit (2PC)** protocol, allowing a broker or coordinator to manage distributed transactions across multiple services.
 
 ---
-food-supplier-2
-all commands above work here as well but on port 8083
 
-2PC commands:
+## 🌐 Deployment Info
 
-get all staged transactions:
-curl http://localhost:8083/transaction/staged
+- **VM IP Address**: `52.178.15.136`
+- **VM Username**: `supplier1`
+- **Port**: `8081`
+- **Base URL**: `http://52.178.15.136:8081`
 
+---
 
-prepare:
-curl -X POST http://localhost:8083/transaction/prepare/tx123   -H "Content-Type: application/json"   -d '{
-        "name": "Pizza Margherita",
-        "description": "Classic pizza with tomato sauce and cheese",
-        "price": 8.5,
-        "available": true
-      }'
+## 🚀 Quick Access: API Templates
 
-commit:
-curl -X POST http://localhost:8083/transaction/commit/tx123
+| Operation      | Template                                                                 |
+|----------------|---------------------------------------------------------------------------|
+| View products (available only) | `GET /products`                                          |
+| View all products (including unavailable) | `GET /product/all`                        |
+| Begin a transaction (optional helper) | `POST /transaction/begin`                    |
+| Prepare an order | `POST /transaction/prepare/{txnId}` + JSON body                         |
+| Commit an order | `POST /transaction/commit/{txnId}`                                      |
+| Rollback an order | `POST /transaction/rollback/{txnId}`                                  |
+| View staged transactions | `GET /transaction/staged`                                     |
 
-rollback/unstage:
-curl -X POST http://localhost:8083/transaction/rollback/tx123
+---
 
+## ✅ Live Examples (on your deployed Azure VM)
 
-✅ 2PC  implemented
------------------------------------------------------------
+### 1. View Available Products
 
- REST Order Service – API Overview
+```bash
+curl http://52.178.15.136:8081/products
+```
 
-This service provides basic CRUD operations for handling orders. It's designed for use as a supplier in a distributed food ordering system.
-📦 Base URL
+### 2. View **All** Products (including unavailable)
 
-http://localhost:8082
+```bash
+curl http://52.178.15.136:8081/product/all
+```
 
-📌 Endpoints Summary (Before Distributed 2PC Coordination)
-### 🛒 Order Management (/orders)
-Method	Endpoint	Description	Request Body
-GET	/orders	Get all orders	–
-GET	/orders/{id}	Get an order by ID	–
-POST	/orders	Create a new order	{"customerName": "...", "delivered": false}
-DELETE	/orders/{id}	Delete an order by ID	–
-PUT	/orders/{id}	Update an order by ID	{"customerName": "...", "delivered": true}
-🔄 2PC-like Transaction API (/transaction)
+---
 
-These endpoints simulate basic two-phase commit behavior (single-service only):
-Method	Endpoint	Description	Request Body / Params
-POST	/transaction/prepare	Stage an order for a transaction	?transactionId=... + order JSON body
-POST	/transaction/commit	Commit a previously staged order	?transactionId=...
-POST	/transaction/rollback	Rollback a staged transaction	?transactionId=...
+## 🔄 Two-Phase Commit (2PC) Operations
 
-⚠ Note: commit or rollback must reference the same transactionId used in the prepare.
+### 3. Prepare a Transaction (Stage an Order)
 
-example usage via curl
-# Create order
-curl -X POST http://localhost:8082/orders \
- -H "Content-Type: application/json" \
- -d '{"customerName":"Alice", "delivered":false}'
+```bash
+curl -X POST http://52.178.15.136:8081/transaction/prepare/txn123      -H "Content-Type: application/json"      -d '{
+           "productId": 1,
+           "quantity": 2
+         }'
+```
 
-# Get all orders
-curl http://localhost:8082/orders
+### 4. Commit a Transaction
 
-# Update order (PUT)
-curl -X PUT http://localhost:8082/orders/1 \
- -H "Content-Type: application/json" \
- -d '{"customerName":"Alice", "delivered":true}'
+```bash
+curl -X POST http://52.178.15.136:8081/transaction/commit/txn123
+```
 
-# Delete order
-curl -X DELETE http://localhost:8082/orders/1
+### 5. Rollback a Transaction
 
-# Transaction prepare
-curl -X POST "http://localhost:8082/transaction/prepare?transactionId=tx1" \
- -H "Content-Type: application/json" \
- -d '{"customerName":"Bob", "delivered":false}'
+```bash
+curl -X POST http://52.178.15.136:8081/transaction/rollback/txn123
+```
 
-# Commit transaction
-curl -X POST "http://localhost:8082/transaction/commit?transactionId=tx1"
+### 6. View All Staged Transactions (Debug Only)
 
-# Rollback transaction
-curl -X POST "http://localhost:8082/transaction/rollback?transactionId=tx1"
+```bash
+curl http://52.178.15.136:8081/transaction/staged
+```
 
- Technologies Used
+---
 
-    Java 17
+## 📦 Optional: Begin a Transaction (non-essential)
 
-    Spring Boot
+```bash
+curl -X POST http://52.178.15.136:8081/transaction/begin
+```
 
-    H2 in-memory database
+---
 
-    RESTful API with Spring MVC
+## 🤖 Broker Coordination Tips
 
-    Maven
+To integrate this service into a distributed system with a **2PC broker**, follow this general coordination protocol:
 
-✅ Project Status
+### 1. **Prepare Phase**
 
-CRUD for orders
+For each involved service (like this supplier):
 
-Basic 2PC simulation (within one service)
+- The broker sends a `POST /transaction/prepare/{txnId}` with order details.
+- Wait for `200 OK` if the supplier accepts the staged order.
+- If any service returns a `4xx`, **abort the entire transaction**.
 
-Distributed 2PC (planned)
+### 2. **Commit Phase**
 
-Logging/Durability for recovery (planned)
+If **all participants** responded with `200 OK` to the prepare:
+
+- The broker sends `POST /transaction/commit/{txnId}` to each participant.
+
+### 3. **Rollback Phase**
+
+If **any participant failed** during the prepare phase:
+
+- The broker sends `POST /transaction/rollback/{txnId}` to **all participants who prepared**.
+
+### 4. **Idempotency & Error Handling**
+
+- All 2PC endpoints are **idempotent**:
+  - Re-sending the same `commit` or `rollback` will not cause errors or duplicates.
+- The broker may safely retry operations if it missed a response.
+- Edge cases like reused `txnId` with different content return HTTP 409 (Conflict).
+
+### 5. **Service Unavailability**
+
+- If the supplier is down during `commit` or `rollback`, the broker should retry until successful.
+- Optionally implement **logging** or persistent staging to recover transactions.
+
+---
+
+## 🧪 Testing Recommendations
+
+You can test the flow as follows:
+
+1. Check current product inventory.
+2. Prepare a transaction using a unique ID.
+3. Verify the staged update using `/transaction/staged`.
+4. Commit or rollback the transaction.
+5. Re-check the product inventory.
+
+---
+
+## 🧳 Maintained By
+
+**Deployed on Azure VM**
+
+- SSH: `ssh -i ~/.ssh/id_rsa.pem supplier1@52.178.15.136`
+- App Port: `8081`
+- REST base: `http://52.178.15.136:8081`
+
+---
 
