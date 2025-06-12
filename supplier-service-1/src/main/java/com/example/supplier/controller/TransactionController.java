@@ -14,6 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/transaction")
 public class TransactionController {
 
+    @PostMapping("/begin")
+    public ResponseEntity<String> begin() {
+        return ResponseEntity.ok("txn-id");
+    }
+
     private final ProductService productService;
 
     // transactionId -> staged item (original productId + updated product)
