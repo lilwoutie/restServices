@@ -45,22 +45,34 @@ public class TransactionController {
     @PostMapping("/prepare/{transactionId}")
     public ResponseEntity<String> prepare(@PathVariable String transactionId,
                                           @RequestBody OrderRequest request) {
-        if (stagedItems.containsKey(transactionId)) {
-            return ResponseEntity.status(409).body("Transaction already prepared"); // 409 Conflict
+        StagedProduct existing = stagedItems.get(transactionId);
+        if (existing != null) {
+            if (existing.productId().equals(request.getProductId())) {
+                // Get original product from DB to calculate original quantity
+                Optional<Product> optOriginal = productService.getProductById(existing.productId());
+                if (optOriginal.isPresent()) {
+                    int stagedQuantity = optOriginal.get().getQuantity() - existing.product().getQuantity();
+                    if (stagedQuantity == request.getQuantity()) {
+                        return ResponseEntity.ok("Transaction already prepared (idempotent)");
+                    }
+                }
+                return ResponseEntity.status(409).body("Transaction ID reused with different quantity");
+            } else {
+                return ResponseEntity.status(409).body("Transaction ID reused with different product ID");
+            }
         }
 
         Optional<Product> optProduct = productService.getProductById(request.getProductId());
         if (optProduct.isEmpty()) {
-            return ResponseEntity.status(404).body("Product not found"); // 404 Not Found
+            return ResponseEntity.status(404).body("Product not found");
         }
 
         Product product = optProduct.get();
-
         int stagedAlready = getTotalStagedQuantity(product.getId());
         int availableEffective = product.getQuantity() - stagedAlready;
 
         if (availableEffective < request.getQuantity()) {
-            return ResponseEntity.badRequest().body("Insufficient stock due to other staged transactions"); // 400 is fine
+            return ResponseEntity.badRequest().body("Insufficient stock due to other staged transactions");
         }
 
         Product updatedProduct = new Product(
@@ -74,6 +86,7 @@ public class TransactionController {
         stagedItems.put(transactionId, new StagedProduct(product.getId(), updatedProduct));
         return ResponseEntity.ok("Prepared transaction " + transactionId);
     }
+
 
 
     @PostMapping("/commit/{transactionId}")
