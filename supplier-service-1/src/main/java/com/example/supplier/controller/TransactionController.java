@@ -46,12 +46,12 @@ public class TransactionController {
     public ResponseEntity<String> prepare(@PathVariable String transactionId,
                                           @RequestBody OrderRequest request) {
         if (stagedItems.containsKey(transactionId)) {
-            return ResponseEntity.badRequest().body("Transaction already prepared");
+            return ResponseEntity.status(409).body("Transaction already prepared"); // 409 Conflict
         }
 
         Optional<Product> optProduct = productService.getProductById(request.getProductId());
         if (optProduct.isEmpty()) {
-            return ResponseEntity.badRequest().body("Product not found");
+            return ResponseEntity.status(404).body("Product not found"); // 404 Not Found
         }
 
         Product product = optProduct.get();
@@ -60,15 +60,9 @@ public class TransactionController {
         int availableEffective = product.getQuantity() - stagedAlready;
 
         if (availableEffective < request.getQuantity()) {
-            return ResponseEntity.badRequest().body("Insufficient stock due to other staged transactions");
+            return ResponseEntity.badRequest().body("Insufficient stock due to other staged transactions"); // 400 is fine
         }
 
-/*
-        if (product.getQuantity() < request.getQuantity()) {
-            return ResponseEntity.badRequest().body("Insufficient stock");
-        }
-*/
-        // Clone product and reduce quantity
         Product updatedProduct = new Product(
                 product.getName(),
                 product.getDescription(),
@@ -81,6 +75,7 @@ public class TransactionController {
         return ResponseEntity.ok("Prepared transaction " + transactionId);
     }
 
+
     @PostMapping("/commit/{transactionId}")
     public ResponseEntity<String> commit(@PathVariable String transactionId) {
         StagedProduct staged = stagedItems.remove(transactionId);
@@ -88,18 +83,20 @@ public class TransactionController {
             productService.updateProduct(staged.productId(), staged.product());
             return ResponseEntity.ok("Committed transaction " + transactionId);
         } else {
-            return ResponseEntity.badRequest().body("No prepared transaction with ID " + transactionId);
+            return ResponseEntity.status(404).body("No prepared transaction with ID " + transactionId);
         }
     }
+
 
     @PostMapping("/rollback/{transactionId}")
     public ResponseEntity<String> rollback(@PathVariable String transactionId) {
         if (stagedItems.remove(transactionId) != null) {
             return ResponseEntity.ok("Rolled back transaction " + transactionId);
         } else {
-            return ResponseEntity.badRequest().body("No transaction to rollback with ID " + transactionId);
+            return ResponseEntity.status(404).body("No transaction to rollback with ID " + transactionId);
         }
     }
+
 
     @GetMapping("/staged")
     public ResponseEntity<Map<String, StagedProduct>> getStaged() {
