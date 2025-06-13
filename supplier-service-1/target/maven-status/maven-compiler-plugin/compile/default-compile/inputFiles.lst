@@ -1,9 +1,0 @@
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/controller/ProductController.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/dto/OrderRequest.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/SupplierApplication.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/repository/ProductRepository.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/App.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/model/Product.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/helper/StagedProduct.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/controller/TransactionController.java
-/home/wout/restsupplier/sup1/supplier-service-1/src/main/java/com/example/supplier/service/ProductService.java
